@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+option java_package = "com.inforeach.eltrader.engine.api.grpc";
+option java_multiple_files = false;
+option java_outer_classname = "FIXEngineProto";
+
+import "FIXEngineCommon.proto";
+import "FIXEngineEvents.proto";
+import "FIXEngineRequests.proto";
+
+//  Represents the communication API with the remote FIXEngine process.
+//
+//  It allows to:
+//    get FIX connection list
+//    subscribe for messages and connection state
+//    get connection state
+//    start client FIX connection
+//    disconnect FIX connection
+//    retrieve FIX messages from DB
+//    send FIX messages with subgroups
+
+service FIXEngine {
+    // Sets current user for whole gRPC session
+    rpc login(LoginRequest) returns (LoginResponse);
+    
+    // Intended for the periodic calls from the client to make sure the connectivity with the server is maintained.
+    // The service will return the parameter value.
+    rpc ping(PingInfo) returns (PingInfo);
+   
+    
+    rpc connect(ConnectRequest) returns (ConnectResponse);
+    
+    rpc disconnect(DisconnectRequest) returns (DisconnectResponse);
+    
+    rpc putOnHold(PutOnHoldRequest) returns (PutOnHoldResponse);
+    
+    rpc removeFromHold(RemoveFromHoldRequest) returns (RemoveFromHoldResponse);
+    
+    rpc sendMessage(SendMessageRequest) returns (SendMessageResponse);
+
+    rpc postMessage(PostMessageRequest) returns (PostMessageResponse);
+
+    rpc subscribe(stream SubscribeRequest) returns (stream ConnectionEvent);
+    
+    rpc getConnectionState(GetStateRequest) returns (ConnectionState);
+    
+    rpc getConnections(GetConnectionsRequest) returns (GetConnectionsResponse);
+    
+    rpc retrieveMessages(RetrieveMessagesRequest) returns (stream FIXFields);
+}

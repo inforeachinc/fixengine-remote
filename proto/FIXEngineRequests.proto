@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+option java_package = "com.inforeach.eltrader.engine.api.grpc";
+
+import "FIXEngineCommon.proto";
+
+
+message PingInfo {
+    repeated sfixed64 sendingTime = 1;
+    int64 pingId = 2;
+}
+
+message LoginRequest {
+    string user = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+}
+
+message ConnectRequest {
+    string connectionName = 1;
+    FIXFields logonParameters = 2;
+}
+
+message ConnectResponse {
+}
+
+message DisconnectRequest {
+    string connectionName = 1;
+    string logoutText = 2;
+}
+
+message DisconnectResponse {
+}
+
+message PutOnHoldRequest {
+    string connectionName = 1;
+    string reason = 2;
+}
+
+message PutOnHoldResponse {
+}
+
+message RemoveFromHoldRequest {
+    string connectionName = 1;
+}
+
+message RemoveFromHoldResponse {
+}
+
+message GetConnectionsRequest {
+}
+
+message GetConnectionsResponse {
+    repeated Connection connection = 1;
+
+    message Connection {
+        string name = 1;
+        ConnectionState state = 2;
+    }
+}
+
+message SendMessageRequest {
+    string connectionName = 1;
+    FIXFields message = 2;
+}
+
+message SendMessageResponse {
+    int32 messageId = 1;
+}
+
+message PostMessageRequest {
+    string connectionName = 1;
+    FIXFields message = 2;
+    Mode mode = 3;
+    
+    enum Mode {
+        USE_IS_FROM_COUNTER_PARTY_FIELD = 0;
+        POST_AS_RECEIVED = 1;
+        POST_AS_SENT = 2;
+    }
+}
+
+message PostMessageResponse {
+    int32 messageId = 1;
+}
+
+message SubscribeRequest {
+    // Connection names to subscribe for messages and/or state. Wildcards '*' and '?' are supported. 
+    repeated string connectionName = 1;
+    
+    // Message filtering expression
+    string filter = 2;
+
+    // Last consumed message ids per connection name. Wildcards '*' and '?' in connection names are supported.
+    // Use MessageIds.AUTO_DETECT_LAST_CONSUMED_MESSAGE_ID to receive messages starting from last message id stored in a database.
+    // If message id is not set then messages from this category will not be received.  
+    map<string, int32> lastConsumedAppMessageFromCounterPartyId = 3;
+    map<string, int32> lastConsumedAppMessageToCounterPartyId = 4;
+    map<string, int32> lastConsumedAdminMessageFromCounterPartyId = 5;
+    map<string, int32> lastConsumedAdminMessageToCounterPartyId = 6;
+
+    // Message tags to be sent. All tags will be sent if not set.
+    repeated int32 tag = 7;
+
+    bool subscribeForConnectDisconnect = 8;
+}
+
+message GetStateRequest {
+    string connectionName = 1;
+}
+
+message RetrieveMessagesRequest {
+    string connectionName = 1;
+    repeated int32 startMessageId = 2;
+    repeated int32 endMessageId = 3;
+    string dbQuery = 4;
+    string inMemoryFilter = 5;
+    int32 maxMsgCount = 6;
+    bool takeIntoAccountPublishingOrder = 7;
+    bool excludeReleasedPendingMessages = 8;
+}

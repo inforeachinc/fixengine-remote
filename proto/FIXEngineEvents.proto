@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option java_package = "com.inforeach.eltrader.engine.api.grpc";
+
+import "FIXEngineCommon.proto";
+
+
+message ConnectionEvent {
+    string connectionName = 1;
+
+    oneof event {
+        Subscribed subscribed = 2;
+
+        Message message = 3;
+        Connected connected = 4;
+        Disconnected disconnected = 5;
+    }
+
+    message Subscribed {
+    }
+
+    message Message {
+        FIXFields fields = 1;
+    }
+
+    message Connected {
+    }
+
+    message Disconnected {
+        string reason = 1;
+    }
+}
